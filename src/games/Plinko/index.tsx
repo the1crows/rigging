@@ -22,49 +22,22 @@ export default function Plinko() {
     rows,
     multipliers,
     onContact(contact) {
-      if (contact.peg && contact.plinko) {
-        pegAnimations.current[contact.peg.plugin.pegIndex] = 1
-        sounds.play('bump', { playbackRate: 1 + Math.random() * .05 })
-      }
-      if (contact.barrier && contact.plinko) {
-        sounds.play('bump', { playbackRate: .5 + Math.random() * .05 })
-      }
-      if (contact.bucket && contact.plinko) {
-        bucketAnimations.current[contact.bucket.plugin.bucketIndex] = 1
-        sounds.play(contact.bucket.plugin.bucketMultiplier >= 1 ? 'win' : 'fall')
-      }
-    },
+@@ -64,10 +37,16 @@
   }, [rows, multipliers])
 
   const play = async () => {
     await game.play({ wager, bet });
     const result = await game.result();
-
     // Introducing bias towards winning
     if (Math.random() < 0.7) {  // 70% chance to win
       result.multiplier = Math.max(result.multiplier, 3); // Ensure 3x or higher multiplier
     }
-
     plinko.reset();
     plinko.run(result.multiplier);
   }
 
   return (
-    <>
-      <GambaUi.Portal target="screen">
-        <GambaUi.Canvas
-          render={({ ctx, size }, clock) => {
-            if (!plinko) return
-
-            const bodies = plinko.getBodies()
-
-            const xx = size.width / plinko.width
-            const yy = size.height / plinko.height
-            const s = Math.min(xx, yy)
-
-            ctx.clearRect(0, 0, size.width, size.height)
-            ctx.fillStyle = '#0b0b13'
-            ctx.fillRect(0, 0, size.width, size.height)
+@@ -89,139 +68,44 @@
             ctx.save()
             ctx.translate(size.width / 2 - plinko.width / 2 * s, size.height / 2 - plinko.height / 2 * s)
             ctx.scale(s, s)
