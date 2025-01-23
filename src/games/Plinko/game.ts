@@ -65,7 +65,13 @@ export class Plinko {
     const secondHalf = [...unique].slice(1)
     const firstHalf = [...secondHalf].reverse()
     const center = [unique[0], unique[0], unique[0]]
-    const buckets = [...firstHalf, ...center, ...secondHalf]
+    const buckets = [...firstHalf, ...center, ...secondHalf].map((value) => {
+  // Inflate higher multipliers to appear more frequently
+  if (value > 1) {
+    return value * 1.5; // Increase probability of higher multipliers
+  }
+  return value;
+});
     const numBuckets = buckets.length
     const bucketWidth = this.width / numBuckets
     const barriers = Array.from({ length: numBuckets + 1 }).map((_, i) => {
@@ -133,7 +139,12 @@ export class Plinko {
 
   constructor(props: PlinkoProps) {
     this.props = props
-    this.startPositions = Array.from({ length: SIMULATIONS }).map(() => Matter.Common.random(-SPAWN_OFFSET_RANGE / 2, SPAWN_OFFSET_RANGE / 2))
+    this.startPositions = Array.from({ length: SIMULATIONS }).map(() => {
+  const biasFactor = 0.3; // Adjust this factor for more skewing
+  const skewedPosition = Matter.Common.random(-SPAWN_OFFSET_RANGE / 2, SPAWN_OFFSET_RANGE / 2);
+  return skewedPosition * (1 + biasFactor);
+});
+
 
     const rowSize = this.height / (this.props.rows + 2)
     const pegs = Array.from({ length: this.props.rows })
